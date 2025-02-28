@@ -166,9 +166,7 @@ pub trait LinkedData<I: Interpretation = (), V: Vocabulary = ()> {
 		S: Visitor<I, V>;
 }
 
-impl<'a, I: Interpretation, V: Vocabulary, T: ?Sized + LinkedData<I, V>> LinkedData<I, V>
-	for &'a T
-{
+impl<I: Interpretation, V: Vocabulary, T: ?Sized + LinkedData<I, V>> LinkedData<I, V> for &T {
 	fn visit<S>(&self, visitor: S) -> Result<S::Ok, S::Error>
 	where
 		S: Visitor<I, V>,
@@ -219,7 +217,7 @@ pub trait Visitor<I: Interpretation = (), V: Vocabulary = ()> {
 }
 
 /// Any mutable reference to a visitor is itself a visitor.
-impl<'s, I: Interpretation, V: Vocabulary, S: Visitor<I, V>> Visitor<I, V> for &'s mut S {
+impl<I: Interpretation, V: Vocabulary, S: Visitor<I, V>> Visitor<I, V> for &mut S {
 	type Ok = ();
 	type Error = S::Error;
 
@@ -250,7 +248,7 @@ pub enum ResourceOrIriRef<'a, I: Interpretation> {
 	Anonymous,
 }
 
-impl<'a, I: Interpretation> ResourceOrIriRef<'a, I> {
+impl<I: Interpretation> ResourceOrIriRef<'_, I> {
 	pub fn into_iri<V>(self, vocabulary: &V, interpretation: &I) -> Option<IriBuf>
 	where
 		V: IriVocabulary,
@@ -347,7 +345,7 @@ pub enum ContextIris {
 	},
 }
 
-impl<'a, I: Interpretation> Default for Context<'a, I> {
+impl<I: Interpretation> Default for Context<'_, I> {
 	fn default() -> Self {
 		Self::Subject
 	}

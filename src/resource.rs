@@ -111,8 +111,8 @@ pub trait LinkedDataResource<I: Interpretation = (), V: Vocabulary = ()> {
 	}
 }
 
-impl<'a, I: Interpretation, V: Vocabulary, T: ?Sized + LinkedDataResource<I, V>>
-	LinkedDataResource<I, V> for &'a T
+impl<I: Interpretation, V: Vocabulary, T: ?Sized + LinkedDataResource<I, V>>
+	LinkedDataResource<I, V> for &T
 {
 	fn interpretation(
 		&self,

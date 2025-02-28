@@ -14,7 +14,7 @@ impl<'a, T> AnonymousBinding<'a, T> {
 	}
 }
 
-impl<'a, I: Interpretation, V: Vocabulary, T> LinkedDataResource<I, V> for AnonymousBinding<'a, T> {
+impl<I: Interpretation, V: Vocabulary, T> LinkedDataResource<I, V> for AnonymousBinding<'_, T> {
 	fn interpretation(
 		&self,
 		_vocabulary: &mut V,
@@ -24,12 +24,8 @@ impl<'a, I: Interpretation, V: Vocabulary, T> LinkedDataResource<I, V> for Anony
 	}
 }
 
-impl<
-		'a,
-		V: Vocabulary + IriVocabularyMut,
-		I: Interpretation,
-		T: LinkedDataPredicateObjects<I, V>,
-	> LinkedDataSubject<I, V> for AnonymousBinding<'a, T>
+impl<V: Vocabulary + IriVocabularyMut, I: Interpretation, T: LinkedDataPredicateObjects<I, V>>
+	LinkedDataSubject<I, V> for AnonymousBinding<'_, T>
 {
 	fn visit_subject<S>(&self, mut serializer: S) -> Result<S::Ok, S::Error>
 	where
@@ -40,12 +36,8 @@ impl<
 	}
 }
 
-impl<
-		'a,
-		V: Vocabulary + IriVocabularyMut,
-		I: Interpretation,
-		T: LinkedDataPredicateObjects<I, V>,
-	> LinkedDataPredicateObjects<I, V> for AnonymousBinding<'a, T>
+impl<V: Vocabulary + IriVocabularyMut, I: Interpretation, T: LinkedDataPredicateObjects<I, V>>
+	LinkedDataPredicateObjects<I, V> for AnonymousBinding<'_, T>
 {
 	fn visit_objects<S>(&self, mut serializer: S) -> Result<S::Ok, S::Error>
 	where
@@ -56,12 +48,8 @@ impl<
 	}
 }
 
-impl<
-		'a,
-		V: Vocabulary + IriVocabularyMut,
-		I: Interpretation,
-		T: LinkedDataPredicateObjects<I, V>,
-	> LinkedDataGraph<I, V> for AnonymousBinding<'a, T>
+impl<V: Vocabulary + IriVocabularyMut, I: Interpretation, T: LinkedDataPredicateObjects<I, V>>
+	LinkedDataGraph<I, V> for AnonymousBinding<'_, T>
 {
 	fn visit_graph<S>(&self, mut serializer: S) -> Result<S::Ok, S::Error>
 	where
@@ -72,12 +60,8 @@ impl<
 	}
 }
 
-impl<
-		'a,
-		V: Vocabulary + IriVocabularyMut,
-		I: Interpretation,
-		T: LinkedDataPredicateObjects<I, V>,
-	> LinkedData<I, V> for AnonymousBinding<'a, T>
+impl<V: Vocabulary + IriVocabularyMut, I: Interpretation, T: LinkedDataPredicateObjects<I, V>>
+	LinkedData<I, V> for AnonymousBinding<'_, T>
 {
 	fn visit<S>(&self, mut serializer: S) -> Result<S::Ok, S::Error>
 	where

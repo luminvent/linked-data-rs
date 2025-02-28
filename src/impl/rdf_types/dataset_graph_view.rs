@@ -9,7 +9,7 @@ use crate::{
 	ResourceInterpretation, SubjectVisitor,
 };
 
-impl<'a, I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for DatasetGraphView<'a, D>
+impl<I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for DatasetGraphView<'_, D>
 where
 	I::Resource: Eq + Hash + LinkedDataResource<I, V>,
 	D: PredicateTraversableDataset<Resource = I::Resource> + PatternMatchingDataset,
@@ -35,8 +35,8 @@ struct PredicateObjects<'d, 'v, D: Dataset> {
 	visited: &'v im::HashSet<&'d D::Resource>,
 }
 
-impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataPredicateObjects<I, V>
-	for PredicateObjects<'d, 'v, D>
+impl<I: Interpretation, V: Vocabulary, D> LinkedDataPredicateObjects<I, V>
+	for PredicateObjects<'_, '_, D>
 where
 	I::Resource: Eq + Hash + LinkedDataResource<I, V>,
 	D: PredicateTraversableDataset<Resource = I::Resource> + PatternMatchingDataset,
@@ -61,8 +61,8 @@ where
 	}
 }
 
-impl<'a, 'v, I: Interpretation, V: Vocabulary, D: Dataset<Resource = I::Resource>>
-	LinkedDataResource<I, V> for Object<'a, 'v, D>
+impl<I: Interpretation, V: Vocabulary, D: Dataset<Resource = I::Resource>> LinkedDataResource<I, V>
+	for Object<'_, '_, D>
 where
 	I::Resource: LinkedDataResource<I, V>,
 {
@@ -82,7 +82,7 @@ struct Object<'d, 'v, D: Dataset> {
 	visited: &'v im::HashSet<&'d D::Resource>,
 }
 
-impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Object<'d, 'v, D>
+impl<I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Object<'_, '_, D>
 where
 	I::Resource: Eq + Hash + LinkedDataResource<I, V>,
 	D: PredicateTraversableDataset<Resource = I::Resource> + PatternMatchingDataset,
@@ -161,7 +161,7 @@ impl<'d, 'v, D: PredicateTraversableDataset + PatternMatchingDataset> Subject<'d
 	}
 }
 
-impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Subject<'d, 'v, D>
+impl<I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Subject<'_, '_, D>
 where
 	D::Resource: Eq + Hash + LinkedDataResource<I, V>,
 	D: PredicateTraversableDataset<Resource = I::Resource> + PatternMatchingDataset,
