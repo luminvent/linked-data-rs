@@ -62,13 +62,13 @@ fn variant_compound_fields(
 			let visit_field = if field_attrs.flatten {
 				visit.bounds.push(
 					syn::parse2(quote!(
-						#ty: ::linked_data::LinkedDataSubject<I_, V_>
+						#ty: ::linked_data_next::LinkedDataSubject<I_, V_>
 					))
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedDataSubject<I_, V_>>::visit_subject(#field_ref, &mut visitor)?;
+					<#ty as ::linked_data_next::LinkedDataSubject<I_, V_>>::visit_subject(#field_ref, &mut visitor)?;
 				}
 			} else {
 				match field_attrs.iri {
@@ -79,28 +79,28 @@ fn variant_compound_fields(
 						if field_attrs.graph_value {
 							visit.bounds.push(
 								syn::parse2(quote!(
-									#ty: ::linked_data::LinkedDataGraph<I_, V_>
+									#ty: ::linked_data_next::LinkedDataGraph<I_, V_>
 								))
 								.unwrap(),
 							);
 
 							quote! {
 								visitor.predicate(
-									::linked_data::iref::Iri::new(#iri).unwrap(),
-									&Some(::linked_data::AnonymousGraph(#field_ref))
+									::linked_data_next::iref::Iri::new(#iri).unwrap(),
+									&Some(::linked_data_next::AnonymousGraph(#field_ref))
 								)?;
 							}
 						} else {
 							visit.bounds.push(
 								syn::parse2(quote!(
-									#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_>
+									#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_>
 								))
 								.unwrap(),
 							);
 
 							quote! {
 								visitor.predicate(
-									::linked_data::iref::Iri::new(#iri).unwrap(),
+									::linked_data_next::iref::Iri::new(#iri).unwrap(),
 									#field_ref
 								)?;
 							}

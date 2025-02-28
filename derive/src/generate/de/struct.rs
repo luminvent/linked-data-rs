@@ -26,17 +26,17 @@ pub fn generate(
 	let (impl_generics, _, where_clause) = ld_generics.split_for_impl();
 
 	Ok(quote! {
-		impl #impl_generics ::linked_data::LinkedDataDeserializeSubject<I_, V_> for #ident #ty_generics #where_clause {
+		impl #impl_generics ::linked_data_next::LinkedDataDeserializeSubject<I_, V_> for #ident #ty_generics #where_clause {
 			fn deserialize_subject_in<D_>(
 				vocabulary_: &V_,
 				interpretation_: &I_,
 				dataset_: &D_,
 				graph_: Option<&I_::Resource>,
 				resource_: &I_::Resource,
-				context_: ::linked_data::Context<I_>
-			) -> Result<Self, ::linked_data::FromLinkedDataError>
+				context_: ::linked_data_next::Context<I_>
+			) -> Result<Self, ::linked_data_next::FromLinkedDataError>
 			where
-				D_: ::linked_data::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
+				D_: ::linked_data_next::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
 			{
 				let context_ = context_.with_subject(resource_);
 				#(#deserialize_fields)*
@@ -44,24 +44,24 @@ pub fn generate(
 			}
 		}
 
-		impl #impl_generics ::linked_data::LinkedDataDeserializePredicateObjects<I_, V_> for #ident #ty_generics #where_clause {
+		impl #impl_generics ::linked_data_next::LinkedDataDeserializePredicateObjects<I_, V_> for #ident #ty_generics #where_clause {
 			fn deserialize_objects_in<'de_, D_>(
 				vocabulary: &V_,
 				interpretation: &I_,
 				dataset: &D_,
 				graph: Option<&I_::Resource>,
 				objects: impl IntoIterator<Item = &'de_ I_::Resource>,
-				context: ::linked_data::Context<I_>
-			) -> Result<Self, ::linked_data::FromLinkedDataError>
+				context: ::linked_data_next::Context<I_>
+			) -> Result<Self, ::linked_data_next::FromLinkedDataError>
 			where
 				I_::Resource: 'de_,
-				D_: ::linked_data::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
+				D_: ::linked_data_next::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
 			{
 				let mut objects = objects.into_iter();
 
 				match objects.next() {
 					Some(object) => {
-						let value = <Self as ::linked_data::LinkedDataDeserializeSubject<I_, V_>>::deserialize_subject_in(
+						let value = <Self as ::linked_data_next::LinkedDataDeserializeSubject<I_, V_>>::deserialize_subject_in(
 							vocabulary,
 							interpretation,
 							dataset,
@@ -71,7 +71,7 @@ pub fn generate(
 						)?;
 
 						if objects.next().is_some() {
-							Err(::linked_data::FromLinkedDataError::TooManyValues(
+							Err(::linked_data_next::FromLinkedDataError::TooManyValues(
 								context.into_iris(vocabulary, interpretation)
 							))
 						} else {
@@ -79,7 +79,7 @@ pub fn generate(
 						}
 					}
 					None => {
-						Err(::linked_data::FromLinkedDataError::MissingRequiredValue(
+						Err(::linked_data_next::FromLinkedDataError::MissingRequiredValue(
 							context.into_iris(vocabulary, interpretation)
 						))
 					}

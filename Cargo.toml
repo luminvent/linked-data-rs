@@ -1,5 +1,5 @@
 [package]
-name = "linked-data"
+name = "linked-data-next"
 description = "Linked-Data dateset serialization/deserialization traits"
 categories = ["encoding", "web-programming"]
 keywords = ["semantic-web", "linked-data", "rdf", "serialization"]
@@ -11,16 +11,19 @@ rust-version.workspace = true
 version.workspace = true
 
 [workspace.package]
-authors = ["Spruce Systems, Inc."]
+authors = [
+	"Spruce Systems, Inc.",
+	"Lum::invent",
+]
 license = "MIT/Apache-2.0"
-repository = "https://github.com/spruceid/linked-data-rs"
+repository = "https://github.com/luminvent/linked-data-rs"
 edition = "2021"
 rust-version = "1.71.1"
 version = "0.1.2"
 
 [features]
 default = ["derive", "serde"]
-derive = ["linked-data-derive"]
+derive = ["linked-data-next-derive"]
 
 [dependencies]
 rdf-types = "0.22.1"
@@ -31,7 +34,7 @@ educe = "0.4.22"
 im = "15.1.0"
 iref.workspace = true
 thiserror.workspace = true
-linked-data-derive = { workspace = true, optional = true }
+linked-data-next-derive = { workspace = true, optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]
@@ -49,7 +52,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-linked-data-derive = { version = "0.1.0", path = "derive" }
+linked-data-next-derive = { version = "0.1.0", path = "derive" }
 iref = "3.0"
 static-iref = "3.0"
 thiserror = "1.0.47"

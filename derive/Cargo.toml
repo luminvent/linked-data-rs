@@ -1,5 +1,5 @@
 [package]
-name = "linked-data-derive"
+name = "linked-data-next-derive"
 description = "Derive macros for the `linked-data` crate"
 authors.workspace = true
 license.workspace = true

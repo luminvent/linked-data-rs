@@ -8,7 +8,7 @@
 //! use iref::IriBuf;
 //! use static_iref::iri;
 //!
-//! #[derive(linked_data::Serialize, linked_data::Deserialize)]
+//! #[derive(linked_data_next::Serialize, linked_data_next::Deserialize)]
 //! #[ld(prefix("ex" = "http://example.org/"))]
 //! struct Foo {
 //!   #[ld(id)]
@@ -27,7 +27,7 @@
 //!   email: "john.smith@example.org".to_owned()
 //! };
 //!
-//! let quads = linked_data::to_quads(rdf_types::generator::Blank::new(), &value)
+//! let quads = linked_data_next::to_quads(rdf_types::generator::Blank::new(), &value)
 //!   .expect("RDF serialization failed");
 //!
 //! for quad in quads {
@@ -44,7 +44,7 @@
 use educe::Educe;
 use iref::{Iri, IriBuf};
 #[cfg(feature = "derive")]
-pub use linked_data_derive::{Deserialize, Serialize};
+pub use linked_data_next_derive::{Deserialize, Serialize};
 use rdf_types::{
 	dataset::{PatternMatchingDataset, TraversableDataset},
 	interpretation::ReverseIriInterpretation,

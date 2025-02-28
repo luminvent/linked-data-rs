@@ -150,7 +150,7 @@ pub trait AsRdfLiteral<V: IriVocabulary + LiteralVocabulary> {
 		&'a self,
 		vocabulary: &V,
 		ty: LiteralTypeRef<'a, V::Iri>,
-	) -> CowRdfLiteral<V>;
+	) -> CowRdfLiteral<'a, V>;
 }
 
 impl<V: IriVocabulary + LiteralVocabulary> AsRdfLiteral<V> for str {
@@ -158,7 +158,7 @@ impl<V: IriVocabulary + LiteralVocabulary> AsRdfLiteral<V> for str {
 		&'a self,
 		_vocabulary: &V,
 		ty: LiteralTypeRef<'a, V::Iri>,
-	) -> CowRdfLiteral<V> {
+	) -> CowRdfLiteral<'a, V> {
 		CowRdfLiteral::Borrowed(RdfLiteralRef::Any(self, ty))
 	}
 }
@@ -168,7 +168,7 @@ impl<V: IriVocabulary + LiteralVocabulary> AsRdfLiteral<V> for String {
 		&'a self,
 		vocabulary: &V,
 		ty: LiteralTypeRef<'a, V::Iri>,
-	) -> CowRdfLiteral<V> {
+	) -> CowRdfLiteral<'a, V> {
 		self.as_str().as_rdf_literal(vocabulary, ty)
 	}
 }

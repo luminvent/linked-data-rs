@@ -121,12 +121,12 @@ impl VocabularyBounds {
 impl ToTokens for VocabularyBounds {
 	fn to_tokens(&self, tokens: &mut TokenStream) {
 		tokens.extend(quote! {
-			::linked_data::rdf_types::Vocabulary
+			::linked_data_next::rdf_types::Vocabulary
 		});
 
 		if self.iri_mut {
 			tokens.extend(quote! {
-				+ ::linked_data::rdf_types::vocabulary::IriVocabularyMut
+				+ ::linked_data_next::rdf_types::vocabulary::IriVocabularyMut
 			})
 		}
 	}
@@ -148,18 +148,18 @@ impl InterpretationBounds {
 impl ToTokens for InterpretationBounds {
 	fn to_tokens(&self, tokens: &mut TokenStream) {
 		tokens.extend(quote! {
-			::linked_data::rdf_types::Interpretation
+			::linked_data_next::rdf_types::Interpretation
 		});
 
 		if self.iri_mut {
 			tokens.extend(quote! {
-				+ ::linked_data::rdf_types::interpretation::IriInterpretation<V_::Iri>
+				+ ::linked_data_next::rdf_types::interpretation::IriInterpretation<V_::Iri>
 			})
 		}
 
 		if self.reverse_iri {
 			tokens.extend(quote! {
-				+ ::linked_data::rdf_types::interpretation::ReverseIriInterpretation<Iri = V_::Iri>
+				+ ::linked_data_next::rdf_types::interpretation::ReverseIriInterpretation<Iri = V_::Iri>
 			})
 		}
 	}

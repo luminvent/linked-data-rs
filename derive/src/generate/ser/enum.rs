@@ -147,13 +147,13 @@ pub fn generate(
 
 	lexical_repr_bounds.push(
 		syn::parse2(quote! {
-			V_: ::linked_data::rdf_types::Vocabulary
+			V_: ::linked_data_next::rdf_types::Vocabulary
 		})
 		.unwrap(),
 	);
 	lexical_repr_bounds.push(
 		syn::parse2(quote! {
-			I_: ::linked_data::rdf_types::Interpretation
+			I_: ::linked_data_next::rdf_types::Interpretation
 		})
 		.unwrap(),
 	);
@@ -199,22 +199,22 @@ pub fn generate(
 	Ok(quote! {
 		#(#compound_types)*
 
-		impl #repr_impl_generics ::linked_data::LinkedDataResource<I_, V_> for #ident #ty_generics #repr_where_clauses {
+		impl #repr_impl_generics ::linked_data_next::LinkedDataResource<I_, V_> for #ident #ty_generics #repr_where_clauses {
 			fn interpretation(
 				&self,
 				vocabulary: &mut V_,
 				interpretation: &mut I_
-			) -> linked_data::ResourceInterpretation<I_, V_> {
+			) -> ::linked_data_next::ResourceInterpretation<I_, V_> {
 				match self {
 					#(#lexical_repr_cases)*
 				}
 			}
 		}
 
-		impl #subject_impl_generics ::linked_data::LinkedDataSubject<I_, V_> for #ident #ty_generics #subject_where_clauses {
+		impl #subject_impl_generics ::linked_data_next::LinkedDataSubject<I_, V_> for #ident #ty_generics #subject_where_clauses {
 			fn visit_subject<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::SubjectVisitor<I_, V_>
+				S_: ::linked_data_next::SubjectVisitor<I_, V_>
 			{
 				match self {
 					#(#visit_subject_cases)*
@@ -222,10 +222,10 @@ pub fn generate(
 			}
 		}
 
-		impl #predicate_impl_generics ::linked_data::LinkedDataPredicateObjects<I_, V_> for #ident #ty_generics #predicate_where_clauses {
+		impl #predicate_impl_generics ::linked_data_next::LinkedDataPredicateObjects<I_, V_> for #ident #ty_generics #predicate_where_clauses {
 			fn visit_objects<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::PredicateObjectsVisitor<I_, V_>
+				S_: ::linked_data_next::PredicateObjectsVisitor<I_, V_>
 			{
 				match self {
 					#(#visit_predicate_cases)*
@@ -233,10 +233,10 @@ pub fn generate(
 			}
 		}
 
-		impl #graph_impl_generics ::linked_data::LinkedDataGraph<I_, V_> for #ident #ty_generics #graph_where_clauses {
+		impl #graph_impl_generics ::linked_data_next::LinkedDataGraph<I_, V_> for #ident #ty_generics #graph_where_clauses {
 			fn visit_graph<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::GraphVisitor<I_, V_>
+				S_: ::linked_data_next::GraphVisitor<I_, V_>
 			{
 				match self {
 					#(#visit_graph_cases)*
@@ -244,10 +244,10 @@ pub fn generate(
 			}
 		}
 
-		impl #dataset_impl_generics ::linked_data::LinkedData<I_, V_> for #ident #ty_generics #dataset_where_clauses {
+		impl #dataset_impl_generics ::linked_data_next::LinkedData<I_, V_> for #ident #ty_generics #dataset_where_clauses {
 			fn visit<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::Visitor<I_, V_>
+				S_: ::linked_data_next::Visitor<I_, V_>
 			{
 				match self {
 					#(#visit_ld_cases)*
@@ -306,26 +306,26 @@ fn variant_interpret(
 		Some(iri) => match shape {
 			VariantShape::Simple(_, _) => {
 				quote! {
-					::linked_data::ResourceInterpretation::Uninterpreted(None)
+					::linked_data_next::ResourceInterpretation::Uninterpreted(None)
 				}
 			}
 			VariantShape::Compound(inner_ty) => {
 				bounds.extend(inner_ty.lexical_repr_bounds.iter().cloned());
 
 				quote! {
-					::linked_data::ResourceInterpretation::Uninterpreted(None)
+					::linked_data_next::ResourceInterpretation::Uninterpreted(None)
 				}
 			}
 			VariantShape::Unit => {
 				let iri_str = iri.as_str();
 				vocabulary_bounds.iri_mut = true;
 				quote! {
-					::linked_data::ResourceInterpretation::Uninterpreted(Some(
-						::linked_data::CowRdfTerm::Owned(
-							::linked_data::rdf_types::Term::Id(
-								::linked_data::rdf_types::Id::Iri(
+					::linked_data_next::ResourceInterpretation::Uninterpreted(Some(
+						::linked_data_next::CowRdfTerm::Owned(
+							::linked_data_next::rdf_types::Term::Id(
+								::linked_data_next::rdf_types::Id::Iri(
 									vocabulary.insert(unsafe {
-										::linked_data::iref::Iri::new_unchecked(
+										::linked_data_next::iref::Iri::new_unchecked(
 											#iri_str
 										)
 									})
@@ -340,13 +340,13 @@ fn variant_interpret(
 			VariantShape::Simple(id, ty) => {
 				bounds.push(
 					syn::parse2(quote! {
-						#ty: ::linked_data::LinkedDataResource<I_, V_>
+						#ty: ::linked_data_next::LinkedDataResource<I_, V_>
 					})
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedDataResource<I_, V_>>::interpretation(
+					<#ty as ::linked_data_next::LinkedDataResource<I_, V_>>::interpretation(
 						#id,
 						vocabulary,
 						interpretation
@@ -359,12 +359,12 @@ fn variant_interpret(
 				let input = &variant.input;
 
 				quote! {
-					::linked_data::LinkedDataResourceRef::interpretation_ref(&#inner_id #input, vocabulary, interpretation)
+					::linked_data_next::LinkedDataResourceRef::interpretation_ref(&#inner_id #input, vocabulary, interpretation)
 				}
 			}
 			VariantShape::Unit => {
 				quote! {
-					::linked_data::ResourceInterpretation::Uninterpreted(None)
+					::linked_data_next::ResourceInterpretation::Uninterpreted(None)
 				}
 			}
 		},
@@ -387,14 +387,14 @@ fn variant_visit_subject(
 				VariantShape::Simple(id, ty) => {
 					bounds.push(
 						syn::parse2(quote! {
-							#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_>
+							#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_>
 						})
 						.unwrap(),
 					);
 
 					quote! {
 						visitor.predicate(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							#id
 						)?;
 						visitor.end()
@@ -409,7 +409,7 @@ fn variant_visit_subject(
 
 					quote! {
 						visitor.predicate(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							&#inner_id #input
 						)?;
 
@@ -427,13 +427,13 @@ fn variant_visit_subject(
 			VariantShape::Simple(id, ty) => {
 				bounds.push(
 					syn::parse2(quote! {
-						#ty: ::linked_data::LinkedDataSubject<I_, V_>
+						#ty: ::linked_data_next::LinkedDataSubject<I_, V_>
 					})
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedDataSubject<I_, V_>>::visit_subject(#id, visitor)
+					<#ty as ::linked_data_next::LinkedDataSubject<I_, V_>>::visit_subject(#id, visitor)
 				}
 			}
 			VariantShape::Compound(inner_ty) => {
@@ -472,14 +472,14 @@ fn variant_visit_predicate(
 				VariantShape::Simple(id, ty) => {
 					bounds.push(
 						syn::parse2(quote! {
-							#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_> + ::linked_data::LinkedDataResource<I_, V_>
+							#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_> + ::linked_data_next::LinkedDataResource<I_, V_>
 						})
 						.unwrap(),
 					);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							#id
 						).visit_objects(visitor)
 					}
@@ -492,15 +492,15 @@ fn variant_visit_predicate(
 					vocabulary_bounds.add(inner_ty.visit_vocabulary_bounds);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							&#inner_id #input
 						).visit_objects(visitor)
 					}
 				}
 				VariantShape::Unit => {
 					quote! {
-						visitor.object(::linked_data::iref::Iri::new(#iri).unwrap())?;
+						visitor.object(::linked_data_next::iref::Iri::new(#iri).unwrap())?;
 						visitor.end()
 					}
 				}
@@ -510,13 +510,13 @@ fn variant_visit_predicate(
 			VariantShape::Simple(id, ty) => {
 				bounds.push(
 					syn::parse2(quote! {
-						#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_>
+						#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_>
 					})
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedDataPredicateObjects<I_, V_>>::visit_objects(#id, visitor)
+					<#ty as ::linked_data_next::LinkedDataPredicateObjects<I_, V_>>::visit_objects(#id, visitor)
 				}
 			}
 			VariantShape::Compound(inner_ty) => {
@@ -555,14 +555,14 @@ fn variant_visit_graph(
 				VariantShape::Simple(id, ty) => {
 					bounds.push(
 						syn::parse2(quote! {
-							#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_> + ::linked_data::LinkedDataResource<I_, V_>
+							#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_> + ::linked_data_next::LinkedDataResource<I_, V_>
 						})
 						.unwrap(),
 					);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							#id
 						).visit_graph(visitor)
 					}
@@ -575,15 +575,15 @@ fn variant_visit_graph(
 					vocabulary_bounds.add(inner_ty.visit_vocabulary_bounds);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							&#inner_id #input
 						).visit_graph(visitor)
 					}
 				}
 				VariantShape::Unit => {
 					quote! {
-						visitor.subject(::linked_data::iref::Iri::new(#iri).unwrap())?;
+						visitor.subject(::linked_data_next::iref::Iri::new(#iri).unwrap())?;
 						visitor.end()
 					}
 				}
@@ -593,13 +593,13 @@ fn variant_visit_graph(
 			VariantShape::Simple(id, ty) => {
 				bounds.push(
 					syn::parse2(quote! {
-						#ty: ::linked_data::LinkedDataGraph<I_, V_>
+						#ty: ::linked_data_next::LinkedDataGraph<I_, V_>
 					})
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedDataGraph<I_, V_>>::visit_graph(#id, visitor)
+					<#ty as ::linked_data_next::LinkedDataGraph<I_, V_>>::visit_graph(#id, visitor)
 				}
 			}
 			VariantShape::Compound(inner_ty) => {
@@ -638,14 +638,14 @@ fn variant_serialize(
 				VariantShape::Simple(id, ty) => {
 					bounds.push(
 						syn::parse2(quote! {
-							#ty: ::linked_data::LinkedDataPredicateObjects<I_, V_> + ::linked_data::LinkedDataResource<I_, V_>
+							#ty: ::linked_data_next::LinkedDataPredicateObjects<I_, V_> + ::linked_data_next::LinkedDataResource<I_, V_>
 						})
 						.unwrap(),
 					);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							#id
 						).visit(visitor)
 					}
@@ -658,15 +658,15 @@ fn variant_serialize(
 					vocabulary_bounds.add(inner_ty.visit_vocabulary_bounds);
 
 					quote! {
-						::linked_data::AnonymousBinding(
-							::linked_data::iref::Iri::new(#iri).unwrap(),
+						::linked_data_next::AnonymousBinding(
+							::linked_data_next::iref::Iri::new(#iri).unwrap(),
 							&#inner_id #input
 						).visit(visitor)
 					}
 				}
 				VariantShape::Unit => {
 					quote! {
-						visitor.default_graph(::linked_data::iref::Iri::new(#iri).unwrap())?;
+						visitor.default_graph(::linked_data_next::iref::Iri::new(#iri).unwrap())?;
 						visitor.end()
 					}
 				}
@@ -676,13 +676,13 @@ fn variant_serialize(
 			VariantShape::Simple(id, ty) => {
 				bounds.push(
 					syn::parse2(quote! {
-						#ty: ::linked_data::LinkedData<I_, V_>
+						#ty: ::linked_data_next::LinkedData<I_, V_>
 					})
 					.unwrap(),
 				);
 
 				quote! {
-					<#ty as ::linked_data::LinkedData<I_, V_>>::visit(#id, visitor)
+					<#ty as ::linked_data_next::LinkedData<I_, V_>>::visit(#id, visitor)
 				}
 			}
 			VariantShape::Compound(inner_ty) => {
@@ -764,24 +764,24 @@ fn variant_subject_type(
 		Some((field_access, ty)) => {
 			lexical_repr_bounds.push(
 				syn::parse2(quote! {
-					#ty: ::linked_data::LinkedDataResource<I_, V_>
+					#ty: ::linked_data_next::LinkedDataResource<I_, V_>
 				})
 				.unwrap(),
 			);
 
 			visit_bounds.push(
 				syn::parse2(quote! {
-					#ty: ::linked_data::LinkedDataResource<I_, V_>
+					#ty: ::linked_data_next::LinkedDataResource<I_, V_>
 				})
 				.unwrap(),
 			);
 
 			quote! {
-				<#ty as ::linked_data::LinkedDataResource::<I_, V_>>::interpretation(&#field_access, vocabulary, interpretation)
+				<#ty as ::linked_data_next::LinkedDataResource::<I_, V_>>::interpretation(&#field_access, vocabulary, interpretation)
 			}
 		}
 		None => quote! {
-			::linked_data::ResourceInterpretation::Uninterpreted(None)
+			::linked_data_next::ResourceInterpretation::Uninterpreted(None)
 		},
 	};
 
@@ -831,62 +831,62 @@ fn variant_subject_type(
 		#[allow(non_camel_case_types)]
 		struct #subject_id #def_ty_generics #borrowed_fields;
 
-		impl #repr_impl_generics ::linked_data::LinkedDataResource<I_, V_> for #subject_id #ty_generics #repr_where_clauses {
+		impl #repr_impl_generics ::linked_data_next::LinkedDataResource<I_, V_> for #subject_id #ty_generics #repr_where_clauses {
 			fn interpretation(
 				&self,
 				vocabulary: &mut V_,
 				interpretation: &mut I_,
-			) -> linked_data::ResourceInterpretation<I_, V_> {
+			) -> ::linked_data_next::ResourceInterpretation<I_, V_> {
 				let #subject_id #input = self;
 				#term
 			}
 		}
 
-		impl #repr_impl_generics ::linked_data::LinkedDataResourceRef<'_nest, I_, V_> for #subject_id #ty_generics #repr_where_clauses {
+		impl #repr_impl_generics ::linked_data_next::LinkedDataResourceRef<'_nest, I_, V_> for #subject_id #ty_generics #repr_where_clauses {
 			fn interpretation_ref(
 				&self,
 				vocabulary: &mut V_,
 				interpretation: &mut I_,
-			) -> linked_data::ResourceInterpretation<'_nest, I_, V_> {
+			) -> ::linked_data_next::ResourceInterpretation<'_nest, I_, V_> {
 				let #subject_id #input = self;
 				#term
 			}
 		}
 
-		impl #visit_impl_generics ::linked_data::LinkedDataSubject<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
+		impl #visit_impl_generics ::linked_data_next::LinkedDataSubject<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
 			fn visit_subject<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::SubjectVisitor<I_, V_>
+				S_: ::linked_data_next::SubjectVisitor<I_, V_>
 			{
 				let #subject_id #input = self;
 				#visit_body
 			}
 		}
 
-		impl #visit_impl_generics ::linked_data::LinkedDataPredicateObjects<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
+		impl #visit_impl_generics ::linked_data_next::LinkedDataPredicateObjects<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
 			fn visit_objects<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::PredicateObjectsVisitor<I_, V_>
+				S_: ::linked_data_next::PredicateObjectsVisitor<I_, V_>
 			{
 				visitor.object(self)?;
 				visitor.end()
 			}
 		}
 
-		impl #visit_impl_generics ::linked_data::LinkedDataGraph<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
+		impl #visit_impl_generics ::linked_data_next::LinkedDataGraph<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
 			fn visit_graph<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::GraphVisitor<I_, V_>
+				S_: ::linked_data_next::GraphVisitor<I_, V_>
 			{
 				visitor.subject(self)?;
 				visitor.end()
 			}
 		}
 
-		impl #visit_impl_generics ::linked_data::LinkedData<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
+		impl #visit_impl_generics ::linked_data_next::LinkedData<I_, V_> for #subject_id #ty_generics #visit_where_clauses {
 			fn visit<S_>(&self, mut visitor: S_) -> Result<S_::Ok, S_::Error>
 			where
-				S_: ::linked_data::Visitor<I_, V_>
+				S_: ::linked_data_next::Visitor<I_, V_>
 			{
 				visitor.default_graph(self)?;
 				visitor.end()

@@ -34,21 +34,21 @@ pub fn generate(
 					VariantShape::Simple(ty) => {
 						bounds.push(
 							syn::parse2(
-								quote!(#ty: ::linked_data::LinkedDataDeserializePredicateObjects<I_, V_>),
+								quote!(#ty: ::linked_data_next::LinkedDataDeserializePredicateObjects<I_, V_>),
 							)
 							.unwrap(),
 						);
 
 						quote! {
-							match vocabulary_.get(unsafe { ::linked_data::iref::Iri::new_unchecked(#iri) }).and_then(|iri| interpretation_.iri_interpretation(&iri)) {
+							match vocabulary_.get(unsafe { ::linked_data_next::iref::Iri::new_unchecked(#iri) }).and_then(|iri| interpretation_.iri_interpretation(&iri)) {
 								Some(predicate) => {
 									let context_ = context_.with_predicate(&predicate);
-									let result = ::linked_data::LinkedDataDeserializePredicateObjects::deserialize_objects_in(
+									let result = ::linked_data_next::LinkedDataDeserializePredicateObjects::deserialize_objects_in(
 										vocabulary_,
 										interpretation_,
 										dataset_,
 										graph_,
-										::linked_data::rdf_types::dataset::PatternMatchingDataset::quad_objects(dataset_, graph_, resource_, &predicate),
+										::linked_data_next::rdf_types::dataset::PatternMatchingDataset::quad_objects(dataset_, graph_, resource_, &predicate),
 										context_
 									);
 
@@ -58,7 +58,7 @@ pub fn generate(
 									}
 								}
 								None => {
-									error = Some(::linked_data::FromLinkedDataError::MissingRequiredValue(
+									error = Some(::linked_data_next::FromLinkedDataError::MissingRequiredValue(
 										context_.into_iris(vocabulary_, interpretation_)
 									))
 								}
@@ -74,9 +74,9 @@ pub fn generate(
 						let constructor = fields_de.constructor;
 
 						quote! {
-							match vocabulary_.get(unsafe { ::linked_data::iref::Iri::new_unchecked(#iri) }).and_then(|iri| interpretation_.iri_interpretation(&iri)) {
+							match vocabulary_.get(unsafe { ::linked_data_next::iref::Iri::new_unchecked(#iri) }).and_then(|iri| interpretation_.iri_interpretation(&iri)) {
 								Some(predicate) => {
-									let mut objects = ::linked_data::rdf_types::dataset::PatternMatchingDataset::quad_objects(dataset_, graph_, resource_, &predicate);
+									let mut objects = ::linked_data_next::rdf_types::dataset::PatternMatchingDataset::quad_objects(dataset_, graph_, resource_, &predicate);
 
 									let result = match objects.next() {
 										Some(resource_) => {
@@ -84,7 +84,7 @@ pub fn generate(
 												#(#deserialize_fields)*
 
 												if objects.next().is_some() {
-													Err(::linked_data::FromLinkedDataError::TooManyValues(
+													Err(::linked_data_next::FromLinkedDataError::TooManyValues(
 														context_.into_iris(vocabulary_, interpretation_)
 													))
 												} else {
@@ -92,7 +92,7 @@ pub fn generate(
 												}
 											})()
 										}
-										None => Err(::linked_data::FromLinkedDataError::MissingRequiredValue(
+										None => Err(::linked_data_next::FromLinkedDataError::MissingRequiredValue(
 											context_.into_iris(vocabulary_, interpretation_)
 										))
 									};
@@ -103,7 +103,7 @@ pub fn generate(
 									}
 								}
 								None => {
-									error = Some(::linked_data::FromLinkedDataError::MissingRequiredValue(
+									error = Some(::linked_data_next::FromLinkedDataError::MissingRequiredValue(
 										context_.into_iris(vocabulary_, interpretation_)
 									))
 								}
@@ -113,7 +113,7 @@ pub fn generate(
 					VariantShape::Unit => {
 						interpretation_bounds.reverse_iri = true;
 						quote! {
-							let expected_iri_ = unsafe { ::linked_data::iref::Iri::new_unchecked(#iri) };
+							let expected_iri_ = unsafe { ::linked_data_next::iref::Iri::new_unchecked(#iri) };
 							for i in interpretation_.iris_of(resource_) {
 								let iri_ = vocabulary_.iri(&i).unwrap();
 								if iri_ == expected_iri_ {
@@ -128,13 +128,13 @@ pub fn generate(
 				VariantShape::Simple(ty) => {
 					bounds.push(
 						syn::parse2(
-							quote!(#ty: ::linked_data::LinkedDataDeserializeSubject<I_, V_>),
+							quote!(#ty: ::linked_data_next::LinkedDataDeserializeSubject<I_, V_>),
 						)
 						.unwrap(),
 					);
 
 					quote! {
-						let result = ::linked_data::LinkedDataDeserializeSubject::deserialize_subject_in(
+						let result = ::linked_data_next::LinkedDataDeserializeSubject::deserialize_subject_in(
 							vocabulary_,
 							interpretation_,
 							dataset_,
@@ -184,17 +184,17 @@ pub fn generate(
 	let (impl_generics, _, where_clause) = ld_generics.split_for_impl();
 
 	Ok(quote! {
-		impl #impl_generics ::linked_data::LinkedDataDeserializeSubject<I_, V_> for #ident #ty_generics #where_clause {
+		impl #impl_generics ::linked_data_next::LinkedDataDeserializeSubject<I_, V_> for #ident #ty_generics #where_clause {
 			fn deserialize_subject_in<D_>(
 				vocabulary_: &V_,
 				interpretation_: &I_,
 				dataset_: &D_,
 				graph_: Option<&I_::Resource>,
 				resource_: &I_::Resource,
-				outer_context_: ::linked_data::Context<I_>
-			) -> Result<Self, ::linked_data::FromLinkedDataError>
+				outer_context_: ::linked_data_next::Context<I_>
+			) -> Result<Self, ::linked_data_next::FromLinkedDataError>
 			where
-				D_: ::linked_data::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
+				D_: ::linked_data_next::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
 			{
 				let context_ = outer_context_.with_subject(resource_);
 				let mut error = None;
@@ -202,7 +202,7 @@ pub fn generate(
 				#(#deserialize_variants)*
 
 				Err(error.unwrap_or_else(|| {
-					::linked_data::FromLinkedDataError::InvalidSubject {
+					::linked_data_next::FromLinkedDataError::InvalidSubject {
 						context: outer_context_.into_iris(vocabulary_, interpretation_),
 						subject: interpretation_.iris_of(resource_).next().map(|i| {
 							vocabulary_.iri(i).unwrap().to_owned()
@@ -212,24 +212,24 @@ pub fn generate(
 			}
 		}
 
-		impl #impl_generics ::linked_data::LinkedDataDeserializePredicateObjects<I_, V_> for #ident #ty_generics #where_clause {
+		impl #impl_generics ::linked_data_next::LinkedDataDeserializePredicateObjects<I_, V_> for #ident #ty_generics #where_clause {
 			fn deserialize_objects_in<'de_, D_>(
 				vocabulary: &V_,
 				interpretation: &I_,
 				dataset: &D_,
 				graph: Option<&I_::Resource>,
 				objects: impl IntoIterator<Item = &'de_ I_::Resource>,
-				context: ::linked_data::Context<I_>
-			) -> Result<Self, ::linked_data::FromLinkedDataError>
+				context: ::linked_data_next::Context<I_>
+			) -> Result<Self, ::linked_data_next::FromLinkedDataError>
 			where
 				I_::Resource: 'de_,
-				D_: ::linked_data::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
+				D_: ::linked_data_next::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>
 			{
 				let mut objects = objects.into_iter();
 
 				match objects.next() {
 					Some(object) => {
-						let value = <Self as ::linked_data::LinkedDataDeserializeSubject<I_, V_>>::deserialize_subject_in(
+						let value = <Self as ::linked_data_next::LinkedDataDeserializeSubject<I_, V_>>::deserialize_subject_in(
 							vocabulary,
 							interpretation,
 							dataset,
@@ -239,7 +239,7 @@ pub fn generate(
 						)?;
 
 						if objects.next().is_some() {
-							Err(::linked_data::FromLinkedDataError::TooManyValues(
+							Err(::linked_data_next::FromLinkedDataError::TooManyValues(
 								context.into_iris(vocabulary, interpretation)
 							))
 						} else {
@@ -247,7 +247,7 @@ pub fn generate(
 						}
 					}
 					None => {
-						Err(::linked_data::FromLinkedDataError::MissingRequiredValue(
+						Err(::linked_data_next::FromLinkedDataError::MissingRequiredValue(
 							context.into_iris(vocabulary, interpretation)
 						))
 					}
