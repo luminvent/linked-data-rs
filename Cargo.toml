@@ -30,7 +30,7 @@ rdf-types = "0.22.1"
 xsd-types = "0.9.2"
 static-iref = "3.0"
 json-syntax = { version = "0.12.2", features = ["canonicalize"] }
-educe = "0.4.22"
+educe = "0.6"
 im = "15.1.0"
 iref.workspace = true
 thiserror.workspace = true
@@ -55,4 +55,4 @@ resolver = "2"
 linked-data-next-derive = { version = "0.1.0", path = "derive" }
 iref = "3.0"
 static-iref = "3.0"
-thiserror = "1.0.47"
+thiserror = "2"
