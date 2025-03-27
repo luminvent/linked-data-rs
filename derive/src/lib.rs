@@ -24,6 +24,22 @@ pub fn derive_serialize(item: TokenStream) -> TokenStream {
 	output.into()
 }
 
+#[proc_macro_derive(SparqlSerialize, attributes(ld))]
+#[proc_macro_error]
+pub fn derive_sparql_serialize(item: TokenStream) -> TokenStream {
+	let input = syn::parse_macro_input!(item as DeriveInput);
+	let mut output = proc_macro2::TokenStream::new();
+
+	match generate::ser_sparql::subject(input) {
+		Ok(tokens) => output.extend(tokens),
+		Err(e) => {
+			abort!(e.span(), e)
+		}
+	}
+
+	output.into()
+}
+
 #[proc_macro_derive(Deserialize, attributes(ld))]
 #[proc_macro_error]
 pub fn derive_deserialize(item: TokenStream) -> TokenStream {

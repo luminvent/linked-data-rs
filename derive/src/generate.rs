@@ -9,6 +9,7 @@ use syn::{punctuated::Punctuated, spanned::Spanned};
 
 pub mod de;
 pub mod ser;
+pub mod ser_sparql;
 
 const RDF_TYPE: &Iri = iri!("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
