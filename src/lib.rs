@@ -74,6 +74,7 @@ mod quads;
 mod rdf;
 mod reference;
 mod resource;
+mod sparql;
 mod subject;
 
 pub use anonymous::*;
@@ -87,6 +88,7 @@ pub use quads::{
 pub use rdf::*;
 pub use reference::*;
 pub use resource::*;
+pub use sparql::to_sparql;
 pub use subject::*;
 
 #[derive(Debug, thiserror::Error)]

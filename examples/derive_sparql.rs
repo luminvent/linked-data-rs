@@ -1,54 +1,53 @@
-use iref::IriBuf;
-use linked_data::{to_quads, Deserialize, Serialize};
-use linked_data_derive::SparqlSerialize;
-use rdf_types::{generator, RdfDisplay};
-
-#[derive(SparqlSerialize, Deserialize)]
-#[ld(prefix("ex" = "http://example.org/"))]
-struct Foo {
-	#[ld("ex:name")]
-	name: String,
-
-	#[ld("ex:bar")]
-	bar: Bar,
-
-	#[ld(flatten)]
-	more: MoreFoo,
-}
+use linked_data::{to_sparql, Deserialize, Serialize};
+use rdf_types::generator::Blank;
 
 #[derive(Serialize, Deserialize)]
 #[ld(prefix("ex" = "http://example.org/"))]
-#[ld(type = "http://example.org/Bar")]
-struct Bar {
-	#[ld(id)]
-	id: IriBuf,
-
-	#[ld("ex:value")]
-	value: u32,
+struct Book {
+	#[ld("dc:title")]
+	title: String,
 }
 
-#[derive(Serialize, Deserialize)]
-#[ld(prefix("ex" = "http://example.org/"))]
-struct MoreFoo {
-	#[ld("ex:email")]
-	email: String,
-}
+// #[derive(Serialize, Deserialize)]
+// #[ld(prefix("ex" = "http://example.org/"))]
+// struct SparqlBook {
+// 	#[ld("dc:title")]
+// 	title: Variable,
+// }
 
 fn main() {
-	let value = Foo {
-		name: "John Smith".to_string(),
-		bar: Bar {
-			id: IriBuf::new("http://example.org/myBar".to_string()).unwrap(),
-			value: 1,
-		},
-		more: MoreFoo {
-			email: "john.smith@example.org".to_string(),
-		},
+	let book = Book {
+		title: "A book".to_string(),
 	};
 
-	let quads = to_quads(generator::Blank::new(), &value).expect("RDF serialization failed");
+	println!("{}", to_sparql::<Blank>(&book));
 
-	for quad in quads {
-		println!("{} .", quad.rdf_display())
-	}
+	// let mut interpretation = SparqlInterpretation::default();
+
+	// let quads = to_quads(Blank::new(), &book).expect("RDF serialization failed");
+	//
+	// quads
+	// 	.into_iter()
+	// 	.map(|Quad(s, p, o, _)| {
+	// 		Triple(
+	// 			interpretation.interpret_id(s),
+	// 			p,
+	// 			interpretation.interpret_term(o),
+	// 		)
+	// 	})
+	// 	.for_each(|triple| println!("{:?} .", triple));
+	//
+	// let book = SparqlBook {
+	// 	title: VariableOrTerm::Variable(SparqlVariable("?a".to_string())),
+	// };
+	//
+	// let mut interpretation = MyInter::default();
+	// let quads = to_interpreted_quads(&mut (), &mut interpretation, &value)
+	// 	.expect("RDF serialization failed");
+	//
+	// for quad in quads {
+	// 	println!("{:?} .", quad)
+	// }
+
+	// 	let mut interpretation = rdf_types::interpretation::WithGenerator::new((), Blank::new());
 }
