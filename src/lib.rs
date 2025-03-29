@@ -44,7 +44,7 @@
 use educe::Educe;
 use iref::{Iri, IriBuf};
 #[cfg(feature = "derive")]
-pub use linked_data_derive::{Deserialize, Serialize};
+pub use linked_data_derive::{Deserialize, Serialize, SparqlSerialize};
 use rdf_types::{
 	dataset::{PatternMatchingDataset, TraversableDataset},
 	interpretation::ReverseIriInterpretation,
@@ -88,7 +88,7 @@ pub use quads::{
 pub use rdf::*;
 pub use reference::*;
 pub use resource::*;
-pub use sparql::to_sparql;
+pub use sparql::*;
 pub use subject::*;
 
 #[derive(Debug, thiserror::Error)]

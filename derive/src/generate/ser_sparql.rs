@@ -4,15 +4,16 @@ use syn::{spanned::Spanned, DeriveInput};
 
 use super::{read_field_attributes, read_type_attributes, Error, TypeAttributes, VocabularyBounds};
 
-mod r#enum;
+// mod r#enum;
 mod r#struct;
 
 pub fn subject(input: DeriveInput) -> Result<TokenStream, Error> {
 	let attrs = read_type_attributes(input.attrs)?;
 	match input.data {
 		syn::Data::Struct(s) => r#struct::generate(&attrs, input.ident, input.generics, s),
-		syn::Data::Enum(e) => r#enum::generate(&attrs, input.ident, input.generics, e),
-		syn::Data::Union(u) => Err(Error::UnionType(u.union_token.span())),
+		//syn::Data::Enum(e) => r#enum::generate(&attrs, input.ident, input.generics, e),
+		//syn::Data::Union(u) => Err(Error::UnionType(u.union_token.span())),
+		_ => unimplemented!(),
 	}
 }
 
@@ -26,7 +27,6 @@ pub struct FieldsVisitor {
 #[derive(Default)]
 pub struct CompoundFields {
 	visit: FieldsVisitor,
-	id_field: Option<(TokenStream, syn::Type)>,
 }
 
 fn variant_compound_fields(
@@ -36,7 +36,6 @@ fn variant_compound_fields(
 	unnamed_accessor: impl Fn(u32) -> TokenStream,
 	by_ref: impl Fn(TokenStream) -> TokenStream,
 ) -> Result<CompoundFields, Error> {
-	let mut id_field = None;
 	let mut visit = FieldsVisitor::default();
 
 	let mut visit_fields = Vec::new();
@@ -54,7 +53,6 @@ fn variant_compound_fields(
 			let ty = field.ty;
 
 			if field_attrs.is_id {
-				id_field = Some((field_access, ty));
 				continue;
 			}
 
@@ -119,5 +117,5 @@ fn variant_compound_fields(
 		visitor.end()
 	};
 
-	Ok(CompoundFields { id_field, visit })
+	Ok(CompoundFields { visit })
 }
