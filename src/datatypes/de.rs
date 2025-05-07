@@ -1,7 +1,7 @@
 use rdf_types::{
+	Interpretation, RDF_LANG_STRING, Vocabulary,
 	interpretation::{ReverseIriInterpretation, ReverseLiteralInterpretation},
 	vocabulary::LiteralVocabulary,
-	Interpretation, Vocabulary, RDF_LANG_STRING,
 };
 
 use crate::{

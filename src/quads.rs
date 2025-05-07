@@ -1,6 +1,7 @@
 use educe::Educe;
 use iref::IriBuf;
 use rdf_types::{
+	Generator, Id, Interpretation, InterpretationMut, Quad, Term, Vocabulary,
 	interpretation::{
 		self, BlankIdInterpretationMut, IriInterpretationMut, LiteralInterpretationMut,
 		ReverseBlankIdInterpretation, ReverseIriInterpretation, ReverseTermInterpretation,
@@ -9,7 +10,6 @@ use rdf_types::{
 	vocabulary::{
 		EmbedIntoVocabulary, ExtractedFromVocabulary, IriVocabularyMut, LiteralVocabularyMut,
 	},
-	Generator, Id, Interpretation, InterpretationMut, Quad, Term, Vocabulary,
 };
 
 use crate::{
@@ -170,8 +170,10 @@ pub fn to_lexical_quads<G: Generator>(
 pub fn to_lexical_subject_quads<G: Generator>(
 	generator: G,
 	graph: Option<&Id>,
-	value: &(impl LinkedDataSubject<interpretation::WithGenerator<G>>
-	      + LinkedDataResource<interpretation::WithGenerator<G>>),
+	value: &(
+	     impl LinkedDataSubject<interpretation::WithGenerator<G>>
+	     + LinkedDataResource<interpretation::WithGenerator<G>>
+	 ),
 ) -> Result<(Id, Vec<RdfQuad>), IntoQuadsError> {
 	let mut interpretation = rdf_types::interpretation::WithGenerator::new((), generator);
 	to_lexical_subject_quads_with(&mut (), &mut interpretation, graph, value)

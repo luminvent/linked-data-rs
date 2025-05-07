@@ -1,6 +1,6 @@
 use rdf_types::{
-	dataset::{DatasetGraphView, PatternMatchingDataset, PredicateTraversableDataset},
 	Dataset, Interpretation, Vocabulary,
+	dataset::{DatasetGraphView, PatternMatchingDataset, PredicateTraversableDataset},
 };
 use std::hash::Hash;
 

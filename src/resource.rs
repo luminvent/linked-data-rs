@@ -1,9 +1,9 @@
 use educe::Educe;
 use iref::{Iri, IriBuf};
 use rdf_types::{
+	BlankId, BlankIdBuf, Id, Interpretation, Term, Vocabulary,
 	interpretation::ReverseTermInterpretation,
 	vocabulary::{BlankIdVocabularyMut, IriVocabularyMut},
-	BlankId, BlankIdBuf, Id, Interpretation, Term, Vocabulary,
 };
 use std::fmt;
 
@@ -211,12 +211,8 @@ impl<V: Vocabulary + BlankIdVocabularyMut, I: Interpretation> LinkedDataResource
 	}
 }
 
-impl<
-		V: Vocabulary,
-		I: Interpretation,
-		T: LinkedDataResource<I, V>,
-		B: LinkedDataResource<I, V>,
-	> LinkedDataResource<I, V> for Id<T, B>
+impl<V: Vocabulary, I: Interpretation, T: LinkedDataResource<I, V>, B: LinkedDataResource<I, V>>
+	LinkedDataResource<I, V> for Id<T, B>
 {
 	fn interpretation(
 		&self,
@@ -231,12 +227,12 @@ impl<
 }
 
 impl<
-		V: Vocabulary,
-		I: Interpretation,
-		T: LinkedDataResource<I, V>,
-		B: LinkedDataResource<I, V>,
-		L: LinkedDataResource<I, V>,
-	> LinkedDataResource<I, V> for Term<Id<T, B>, L>
+	V: Vocabulary,
+	I: Interpretation,
+	T: LinkedDataResource<I, V>,
+	B: LinkedDataResource<I, V>,
+	L: LinkedDataResource<I, V>,
+> LinkedDataResource<I, V> for Term<Id<T, B>, L>
 {
 	fn interpretation(
 		&self,

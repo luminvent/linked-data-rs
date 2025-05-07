@@ -1,5 +1,5 @@
-use linked_data_next::{to_quads, Deserialize, LinkedDataResource, Serialize};
-use rdf_types::{generator, RdfDisplay};
+use linked_data_next::{Deserialize, LinkedDataResource, Serialize, to_quads};
+use rdf_types::{RdfDisplay, generator};
 
 #[derive(Serialize, Deserialize)]
 #[ld(prefix("ex" = "http://example.org/"))]

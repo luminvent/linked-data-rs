@@ -4,11 +4,11 @@ use std::borrow::Borrow;
 use educe::Educe;
 use iref::Iri;
 use rdf_types::{
+	Id, Interpretation, LiteralType, LiteralTypeRef, Quad, Term, Vocabulary,
 	vocabulary::{
 		BlankIdVocabulary, EmbedIntoVocabulary, IriVocabulary, IriVocabularyMut, LiteralVocabulary,
 		LiteralVocabularyMut,
 	},
-	Id, Interpretation, LiteralType, LiteralTypeRef, Quad, Term, Vocabulary,
 };
 
 pub type RdfId<V> = Id<<V as IriVocabulary>::Iri, <V as BlankIdVocabulary>::BlankId>;

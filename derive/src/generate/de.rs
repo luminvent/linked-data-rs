@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use proc_macro2::TokenStream;
 
 use quote::{format_ident, quote};
-use syn::{spanned::Spanned, DeriveInput};
+use syn::{DeriveInput, spanned::Spanned};
 
 use super::{
-	read_field_attributes, read_type_attributes, Error, InterpretationBounds, TypeAttributes,
+	Error, InterpretationBounds, TypeAttributes, read_field_attributes, read_type_attributes,
 };
 
 mod r#enum;

@@ -1,9 +1,9 @@
 use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 
-use crate::generate::{extend_generics, TypeAttributes, VocabularyBounds};
+use crate::generate::{TypeAttributes, VocabularyBounds, extend_generics};
 
-use super::{generate_fields, Error, FieldsDeserialization};
+use super::{Error, FieldsDeserialization, generate_fields};
 
 pub fn generate(
 	attrs: &TypeAttributes,

@@ -1,10 +1,10 @@
 use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 
-use super::{generate_fields, Error};
+use super::{Error, generate_fields};
 use crate::generate::{
-	extend_generics, read_variant_attributes, InterpretationBounds, TypeAttributes,
-	VocabularyBounds,
+	InterpretationBounds, TypeAttributes, VocabularyBounds, extend_generics,
+	read_variant_attributes,
 };
 
 pub fn generate(

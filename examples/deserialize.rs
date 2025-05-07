@@ -1,8 +1,8 @@
 use iref::IriBuf;
-use linked_data_next::{to_quads, LinkedDataDeserializeSubject};
+use linked_data_next::{LinkedDataDeserializeSubject, to_quads};
 use linked_data_next_derive::{Deserialize, Serialize};
 use rdf_types::dataset::IndexedBTreeDataset;
-use rdf_types::{generator, Term};
+use rdf_types::{Term, generator};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[ld(prefix("ex" = "http://example.org/"))]

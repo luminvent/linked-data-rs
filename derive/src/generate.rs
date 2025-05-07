@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use iref::{InvalidIri, Iri, IriBuf};
 use proc_macro2::{Span, TokenStream, TokenTree};
-use quote::{format_ident, quote, ToTokens};
+use quote::{ToTokens, format_ident, quote};
 use static_iref::iri;
 
 use syn::{punctuated::Punctuated, spanned::Spanned};
@@ -242,13 +242,13 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 											return Err(Error::InvalidAttribute(
 												AttributeError::UnexpectedToken,
 												token.span(),
-											))
+											));
 										}
 										None => {
 											return Err(Error::InvalidAttribute(
 												AttributeError::MissingPrefixBinding,
 												span,
-											))
+											));
 										}
 									}
 								} else if id == "type" {
@@ -276,7 +276,7 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 															return Err(Error::InvalidAttribute(
 																AttributeError::InvalidType,
 																span,
-															))
+															));
 														}
 													}
 												}
@@ -284,13 +284,13 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 													return Err(Error::InvalidAttribute(
 														AttributeError::UnexpectedToken,
 														token.span(),
-													))
+													));
 												}
 												None => {
 													return Err(Error::InvalidAttribute(
 														AttributeError::MissingType,
 														span,
-													))
+													));
 												}
 											}
 										}
@@ -298,13 +298,13 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 											return Err(Error::InvalidAttribute(
 												AttributeError::UnexpectedToken,
 												token.span(),
-											))
+											));
 										}
 										None => {
 											return Err(Error::InvalidAttribute(
 												AttributeError::MissingType,
 												span,
-											))
+											));
 										}
 									}
 								} else {
@@ -319,7 +319,7 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 								return Err(Error::InvalidAttribute(
 									AttributeError::UnexpectedToken,
 									token.span(),
-								))
+								));
 							}
 						}
 					}
@@ -328,7 +328,7 @@ fn read_type_attributes(attributes: Vec<syn::Attribute>) -> Result<TypeAttribute
 					return Err(Error::InvalidAttribute(
 						AttributeError::InvalidShape,
 						attr.span(),
-					))
+					));
 				}
 			}
 		}
@@ -424,14 +424,14 @@ fn read_field_attributes(attributes: Vec<syn::Attribute>) -> Result<FieldAttribu
 											return Err(Error::InvalidAttribute(
 												AttributeError::InvalidCompactIri,
 												l.span(),
-											))
+											));
 										}
 									},
 									l => {
 										return Err(Error::InvalidAttribute(
 											AttributeError::ExpectedString,
 											l.span(),
-										))
+										));
 									}
 								}
 							}
@@ -439,7 +439,7 @@ fn read_field_attributes(attributes: Vec<syn::Attribute>) -> Result<FieldAttribu
 								return Err(Error::InvalidAttribute(
 									AttributeError::UnexpectedToken,
 									token.span(),
-								))
+								));
 							}
 						}
 
@@ -449,7 +449,7 @@ fn read_field_attributes(attributes: Vec<syn::Attribute>) -> Result<FieldAttribu
 								return Err(Error::InvalidAttribute(
 									AttributeError::UnexpectedToken,
 									token.span(),
-								))
+								));
 							}
 							None => break,
 						}
@@ -459,7 +459,7 @@ fn read_field_attributes(attributes: Vec<syn::Attribute>) -> Result<FieldAttribu
 					return Err(Error::InvalidAttribute(
 						AttributeError::InvalidShape,
 						attr.span(),
-					))
+					));
 				}
 			}
 		}
@@ -489,7 +489,7 @@ fn read_variant_attributes(attributes: Vec<syn::Attribute>) -> Result<VariantAtt
 					return Err(Error::InvalidAttribute(
 						AttributeError::InvalidShape,
 						attr.span(),
-					))
+					));
 				}
 			}
 		}

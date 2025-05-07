@@ -46,10 +46,10 @@ use iref::{Iri, IriBuf};
 #[cfg(feature = "derive")]
 pub use linked_data_next_derive::{Deserialize, Serialize};
 use rdf_types::{
+	Interpretation, Vocabulary,
 	dataset::{PatternMatchingDataset, TraversableDataset},
 	interpretation::ReverseIriInterpretation,
 	vocabulary::IriVocabulary,
-	Interpretation, Vocabulary,
 };
 
 #[doc(hidden)]
@@ -80,9 +80,9 @@ pub use anonymous::*;
 pub use graph::*;
 pub use predicate::*;
 pub use quads::{
-	to_interpreted_graph_quads, to_interpreted_quads, to_interpreted_subject_quads,
+	IntoQuadsError, to_interpreted_graph_quads, to_interpreted_quads, to_interpreted_subject_quads,
 	to_lexical_quads, to_lexical_quads_with, to_lexical_subject_quads,
-	to_lexical_subject_quads_with, to_quads, to_quads_with, IntoQuadsError,
+	to_lexical_subject_quads_with, to_quads, to_quads_with,
 };
 pub use rdf::*;
 pub use reference::*;

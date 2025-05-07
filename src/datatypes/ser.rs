@@ -1,6 +1,6 @@
 use rdf_types::{
-	vocabulary::{IriVocabularyMut, LiteralVocabularyMut},
 	Id, Interpretation, Term, Vocabulary,
+	vocabulary::{IriVocabularyMut, LiteralVocabularyMut},
 };
 
 use crate::{

@@ -5,13 +5,13 @@ use syn::{punctuated::Punctuated, spanned::Spanned};
 
 use crate::{
 	generate::{
-		extend_generics, read_variant_attributes, InterpretationBounds, TypeAttributes,
-		VariantAttributes, VocabularyBounds,
+		InterpretationBounds, TypeAttributes, VariantAttributes, VocabularyBounds, extend_generics,
+		read_variant_attributes,
 	},
 	utils::UsesGenericParam,
 };
 
-use super::{variant_compound_fields, Error};
+use super::{Error, variant_compound_fields};
 
 pub fn generate(
 	attrs: &TypeAttributes,

@@ -1,10 +1,10 @@
 use iref::{Iri, IriBuf};
 use rdf_types::{
+	BlankId, BlankIdBuf, Id, Interpretation, Vocabulary,
 	dataset::PatternMatchingDataset,
 	interpretation::{
 		ReverseBlankIdInterpretation, ReverseIdInterpretation, ReverseIriInterpretation,
 	},
-	BlankId, BlankIdBuf, Id, Interpretation, Vocabulary,
 };
 
 use crate::{

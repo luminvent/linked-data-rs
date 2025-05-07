@@ -1,9 +1,9 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 
-use crate::generate::{extend_generics, InterpretationBounds, TypeAttributes, RDF_TYPE};
+use crate::generate::{InterpretationBounds, RDF_TYPE, TypeAttributes, extend_generics};
 
-use super::{variant_compound_fields, Error};
+use super::{Error, variant_compound_fields};
 
 pub fn generate(
 	attrs: &TypeAttributes,

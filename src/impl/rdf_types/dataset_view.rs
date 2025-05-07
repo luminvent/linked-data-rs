@@ -5,10 +5,10 @@ use crate::{
 	LinkedDataSubject, PredicateObjectsVisitor, ResourceInterpretation, SubjectVisitor,
 };
 use rdf_types::{
+	Dataset, Interpretation, Quad, Vocabulary,
 	dataset::{
 		DatasetView, PatternMatchingDataset, PredicateTraversableDataset, SubjectTraversableDataset,
 	},
-	Dataset, Interpretation, Quad, Vocabulary,
 };
 
 impl<I: Interpretation, V: Vocabulary, D> LinkedDataGraph<I, V> for DatasetView<'_, D>
@@ -157,11 +157,8 @@ struct Subject<'a, 'v, D: Dataset> {
 	visit_predicates: bool,
 }
 
-impl<
-		'a,
-		'v,
-		D: SubjectTraversableDataset + PredicateTraversableDataset + PatternMatchingDataset,
-	> Subject<'a, 'v, D>
+impl<'a, 'v, D: SubjectTraversableDataset + PredicateTraversableDataset + PatternMatchingDataset>
+	Subject<'a, 'v, D>
 where
 	D::Resource: Eq + Hash,
 {
