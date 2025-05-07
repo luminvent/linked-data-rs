@@ -198,6 +198,31 @@ pub trait LinkedDataDeserializeSubject<I: Interpretation = (), V: Vocabulary = (
 			Context::default(),
 		)
 	}
+
+	fn deserialize_subjects<D>(
+		vocabulary: &V,
+		interpretation: &I,
+		dataset: &D,
+		graph: Option<&I::Resource>,
+		resources: impl IntoIterator<Item = I::Resource>,
+	) -> Result<Vec<Self>, FromLinkedDataError>
+	where
+		D: PatternMatchingDataset<Resource = I::Resource>,
+	{
+		resources
+			.into_iter()
+			.map(|resource| {
+				Self::deserialize_subject_in(
+					vocabulary,
+					interpretation,
+					dataset,
+					graph,
+					&resource,
+					Context::default(),
+				)
+			})
+			.collect::<Result<Vec<_>, _>>()
+	}
 }
 
 impl<I: Interpretation, V: Vocabulary> LinkedDataDeserializeSubject<I, V> for IriBuf
