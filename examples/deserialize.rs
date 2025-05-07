@@ -11,6 +11,8 @@ struct Foo {
 	id: IriBuf,
 	#[ld("ex:name")]
 	name: String,
+	#[ld("ex:email")]
+	emails: Vec<String>,
 }
 
 fn main() {
@@ -21,6 +23,7 @@ fn main() {
 	let value_1 = Foo {
 		id: id_1.clone(),
 		name: "John Smith".to_string(),
+		emails: vec!["john.smith@mail.me".to_string()],
 	};
 
 	to_quads(generator::Blank::new(), &value_1)
@@ -30,7 +33,7 @@ fn main() {
 			let quad = rdf_types::Quad(
 				Term::Id(rdf_quad.0),
 				Term::iri(rdf_quad.1),
-				rdf_quad.2.into(),
+				rdf_quad.2,
 				rdf_quad.3.map(Term::Id),
 			);
 
@@ -42,6 +45,7 @@ fn main() {
 	let value_2 = Foo {
 		id: id_2.clone(),
 		name: "Joe Dalton".to_string(),
+		emails: vec!["joe.dalton@mail.me".to_string()],
 	};
 
 	to_quads(generator::Blank::new(), &value_2)
@@ -51,7 +55,7 @@ fn main() {
 			let quad = rdf_types::Quad(
 				Term::Id(rdf_quad.0),
 				Term::iri(rdf_quad.1),
-				rdf_quad.2.into(),
+				rdf_quad.2,
 				rdf_quad.3.map(Term::Id),
 			);
 

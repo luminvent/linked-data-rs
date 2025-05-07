@@ -199,12 +199,13 @@ pub trait LinkedDataDeserializeSubject<I: Interpretation = (), V: Vocabulary = (
 		)
 	}
 
-	fn deserialize_subjects<D>(
+	fn deserialize_subjects_in<D>(
 		vocabulary: &V,
 		interpretation: &I,
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		resources: impl IntoIterator<Item = I::Resource>,
+		context: Context<I>,
 	) -> Result<Vec<Self>, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>,
@@ -218,10 +219,30 @@ pub trait LinkedDataDeserializeSubject<I: Interpretation = (), V: Vocabulary = (
 					dataset,
 					graph,
 					&resource,
-					Context::default(),
+					context,
 				)
 			})
 			.collect::<Result<Vec<_>, _>>()
+	}
+
+	fn deserialize_subjects<D>(
+		vocabulary: &V,
+		interpretation: &I,
+		dataset: &D,
+		graph: Option<&I::Resource>,
+		resources: impl IntoIterator<Item = I::Resource>,
+	) -> Result<Vec<Self>, FromLinkedDataError>
+	where
+		D: PatternMatchingDataset<Resource = I::Resource>,
+	{
+		Self::deserialize_subjects_in(
+			vocabulary,
+			interpretation,
+			dataset,
+			graph,
+			resources,
+			Context::default(),
+		)
 	}
 }
 

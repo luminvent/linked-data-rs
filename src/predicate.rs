@@ -334,3 +334,36 @@ where
 		}
 	}
 }
+
+impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
+	LinkedDataDeserializePredicateObjects<I, V> for Vec<T>
+where
+	I: ReverseIriInterpretation<Iri = V::Iri>,
+{
+	fn deserialize_objects_in<'a, D>(
+		vocabulary: &V,
+		interpretation: &I,
+		dataset: &D,
+		graph: Option<&I::Resource>,
+		objects: impl IntoIterator<Item = &'a I::Resource>,
+		context: Context<I>,
+	) -> Result<Self, FromLinkedDataError>
+	where
+		I::Resource: 'a,
+		D: PatternMatchingDataset<Resource = I::Resource>,
+	{
+		objects
+			.into_iter()
+			.map(|object| {
+				T::deserialize_subject_in(
+					vocabulary,
+					interpretation,
+					dataset,
+					graph,
+					object,
+					context,
+				)
+			})
+			.collect::<Result<Vec<_>, _>>()
+	}
+}
