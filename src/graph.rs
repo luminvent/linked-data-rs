@@ -123,7 +123,7 @@ impl<I: Interpretation, V: Vocabulary, T> LinkedDataResource<I, V> for Anonymous
 		&self,
 		_vocabulary: &mut V,
 		_interpretation: &mut I,
-	) -> crate::ResourceInterpretation<I, V> {
+	) -> crate::ResourceInterpretation<'_, I, V> {
 		crate::ResourceInterpretation::Uninterpreted(None)
 	}
 }

@@ -6,7 +6,7 @@ macro_rules! json_literal {
 				&self,
 				_vocabulary: &mut V,
 				_interpretation: &mut I,
-			) -> $crate::ResourceInterpretation<I, V> {
+			) -> $crate::ResourceInterpretation<'_, I, V> {
 				use $crate::{rdf_types::Term, CowRdfTerm, RdfLiteral, ResourceInterpretation};
 
 				let mut value = $crate::json_syntax::to_value(self).unwrap();
@@ -139,6 +139,7 @@ macro_rules! json_literal {
 
 #[cfg(test)]
 mod test {
+	#[allow(dead_code)]
 	#[derive(Debug, serde::Serialize, serde::Deserialize)]
 	struct Test {
 		field: String,

@@ -19,7 +19,7 @@ impl<I: Interpretation, V: Vocabulary, T> LinkedDataResource<I, V> for Anonymous
 		&self,
 		_vocabulary: &mut V,
 		_interpretation: &mut I,
-	) -> ResourceInterpretation<I, V> {
+	) -> ResourceInterpretation<'_, I, V> {
 		ResourceInterpretation::Uninterpreted(None)
 	}
 }

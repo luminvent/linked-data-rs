@@ -265,9 +265,10 @@ impl<I: Interpretation> ResourceOrIriRef<'_, I> {
 	}
 }
 
-#[derive(Educe)]
+#[derive(Default, Educe)]
 #[educe(Debug(bound = "I::Resource: core::fmt::Debug"), Clone, Copy)]
 pub enum Context<'a, I: Interpretation> {
+	#[default]
 	Subject,
 	Predicate {
 		subject: ResourceOrIriRef<'a, I>,
@@ -343,12 +344,6 @@ pub enum ContextIris {
 		subject: Option<IriBuf>,
 		predicate: Option<IriBuf>,
 	},
-}
-
-impl<I: Interpretation> Default for Context<'_, I> {
-	fn default() -> Self {
-		Self::Subject
-	}
 }
 
 pub trait LinkedDataDeserialize<V: Vocabulary = (), I: Interpretation = ()>: Sized {
