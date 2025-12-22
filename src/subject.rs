@@ -6,6 +6,8 @@ use rdf_types::{
 		ReverseBlankIdInterpretation, ReverseIdInterpretation, ReverseIriInterpretation,
 	},
 };
+use std::collections::HashSet;
+use std::hash::Hash;
 
 use crate::{
 	Context, FromLinkedDataError, LinkedDataGraph, LinkedDataPredicateObjects, LinkedDataResource,
@@ -360,5 +362,33 @@ impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
 			context,
 		)
 		.map(Box::new)
+	}
+}
+
+impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
+	LinkedDataDeserializeSubject<I, V> for HashSet<T>
+where
+	T: Hash + Eq,
+{
+	fn deserialize_subject_in<D>(
+		vocabulary: &V,
+		interpretation: &I,
+		dataset: &D,
+		graph: Option<&I::Resource>,
+		resource: &I::Resource,
+		context: Context<I>,
+	) -> Result<Self, FromLinkedDataError>
+	where
+		D: PatternMatchingDataset<Resource = I::Resource>,
+	{
+		T::deserialize_subject_in(
+			vocabulary,
+			interpretation,
+			dataset,
+			graph,
+			resource,
+			context,
+		)
+		.map(|value| HashSet::from([value]))
 	}
 }

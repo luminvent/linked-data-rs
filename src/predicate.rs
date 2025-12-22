@@ -7,6 +7,8 @@ use rdf_types::{
 	},
 	vocabulary::{BlankIdVocabularyMut, IriVocabularyMut},
 };
+use std::collections::HashSet;
+use std::hash::Hash;
 
 use crate::{
 	Context, FromLinkedDataError, LinkedDataDeserializeSubject, LinkedDataResource,
@@ -89,6 +91,21 @@ impl<I: Interpretation, V: Vocabulary, T: LinkedDataSubject<I, V> + LinkedDataRe
 		S: PredicateObjectsVisitor<I, V>,
 	{
 		for t in self {
+			visitor.object(t)?;
+		}
+
+		visitor.end()
+	}
+}
+
+impl<I: Interpretation, V: Vocabulary, T: LinkedDataSubject<I, V> + LinkedDataResource<I, V>>
+	LinkedDataPredicateObjects<I, V> for HashSet<T>
+{
+	fn visit_objects<S>(&self, mut visitor: S) -> Result<S::Ok, S::Error>
+	where
+		S: PredicateObjectsVisitor<I, V>,
+	{
+		for t in self.iter() {
 			visitor.object(t)?;
 		}
 
@@ -365,5 +382,39 @@ where
 				)
 			})
 			.collect::<Result<Vec<_>, _>>()
+	}
+}
+
+impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
+	LinkedDataDeserializePredicateObjects<I, V> for HashSet<T>
+where
+	I: ReverseIriInterpretation<Iri = V::Iri>,
+	T: Clone + Hash + Eq,
+{
+	fn deserialize_objects_in<'a, D>(
+		vocabulary: &V,
+		interpretation: &I,
+		dataset: &D,
+		graph: Option<&I::Resource>,
+		objects: impl IntoIterator<Item = &'a I::Resource>,
+		context: Context<I>,
+	) -> Result<Self, FromLinkedDataError>
+	where
+		I::Resource: 'a,
+		D: PatternMatchingDataset<Resource = I::Resource>,
+	{
+		objects
+			.into_iter()
+			.map(|object| {
+				T::deserialize_subject_in(
+					vocabulary,
+					interpretation,
+					dataset,
+					graph,
+					object,
+					context,
+				)
+			})
+			.collect::<Result<HashSet<_>, _>>()
 	}
 }
