@@ -106,6 +106,7 @@ macro_rules! deserialize_datatype {
 	};
 }
 
+deserialize_datatype!(bool, XSD_BOOLEAN,);
 deserialize_datatype!(u8, XSD_UNSIGNED_BYTE, xsd_types::XSD_INTEGER);
 deserialize_datatype!(u16, XSD_UNSIGNED_SHORT, xsd_types::XSD_INTEGER);
 deserialize_datatype!(u32, XSD_UNSIGNED_INT, xsd_types::XSD_INTEGER);
@@ -114,5 +115,7 @@ deserialize_datatype!(i8, XSD_BYTE, xsd_types::XSD_INTEGER);
 deserialize_datatype!(i16, XSD_SHORT, xsd_types::XSD_INTEGER);
 deserialize_datatype!(i32, XSD_INT, xsd_types::XSD_INTEGER);
 deserialize_datatype!(i64, XSD_LONG, xsd_types::XSD_INTEGER);
+deserialize_datatype!(f32, XSD_FLOAT, xsd_types::XSD_DECIMAL);
+deserialize_datatype!(f64, XSD_DOUBLE, xsd_types::XSD_DECIMAL);
 deserialize_datatype!(String, XSD_STRING,);
 deserialize_datatype!(xsd_types::DateTime, XSD_DATE_TIME,);

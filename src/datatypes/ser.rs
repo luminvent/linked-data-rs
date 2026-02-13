@@ -9,39 +9,43 @@ use crate::{
 };
 
 macro_rules! datatype {
-	($($ty:ty : $variant:ident),*) => {
-		$(
-			impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation> LinkedDataResource<I, V> for $ty {
-				fn interpretation(
-					&self,
-					_vocabulary: &mut V,
-					_interpretation: &mut I,
-				) -> ResourceInterpretation<'_, I, V> {
-					ResourceInterpretation::Uninterpreted(Some(CowRdfTerm::Owned(Term::Literal(RdfLiteral::Xsd(
-						xsd_types::Value::$variant(self.clone())
-					)))))
-				}
+	($ty:ty, $variant:ident) => {
+		impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation>
+			LinkedDataResource<I, V> for $ty
+		{
+			fn interpretation(
+				&self,
+				_vocabulary: &mut V,
+				_interpretation: &mut I,
+			) -> ResourceInterpretation<'_, I, V> {
+				ResourceInterpretation::Uninterpreted(Some(CowRdfTerm::Owned(Term::Literal(
+					RdfLiteral::Xsd(xsd_types::Value::$variant(self.clone().into())),
+				))))
 			}
+		}
 
-			impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation> LinkedDataSubject<I, V> for $ty {
-				fn visit_subject<S>(&self, visitor: S) -> Result<S::Ok, S::Error>
-				where
-					S: crate::SubjectVisitor<I, V>
-				{
-					visitor.end()
-				}
+		impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation>
+			LinkedDataSubject<I, V> for $ty
+		{
+			fn visit_subject<S>(&self, visitor: S) -> Result<S::Ok, S::Error>
+			where
+				S: crate::SubjectVisitor<I, V>,
+			{
+				visitor.end()
 			}
+		}
 
-			impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation> LinkedDataPredicateObjects<I, V> for $ty {
-				fn visit_objects<S>(&self, mut visitor: S) -> Result<S::Ok, S::Error>
-				where
-					S: PredicateObjectsVisitor<I, V>,
-				{
-					visitor.object(self)?;
-					visitor.end()
-				}
+		impl<V: Vocabulary + IriVocabularyMut + LiteralVocabularyMut, I: Interpretation>
+			LinkedDataPredicateObjects<I, V> for $ty
+		{
+			fn visit_objects<S>(&self, mut visitor: S) -> Result<S::Ok, S::Error>
+			where
+				S: PredicateObjectsVisitor<I, V>,
+			{
+				visitor.object(self)?;
+				visitor.end()
 			}
-		)*
+		}
 	};
 }
 
@@ -82,18 +86,19 @@ macro_rules! unsized_datatype {
 	};
 }
 
-datatype! {
-	u8: UnsignedByte,
-	u16: UnsignedShort,
-	u32: UnsignedInt,
-	u64: UnsignedLong,
-	i8: Byte,
-	i16: Short,
-	i32: Int,
-	i64: Long,
-	String: String,
-	xsd_types::DateTime: DateTime
-}
+datatype!(bool, Boolean);
+datatype!(u8, UnsignedByte);
+datatype!(u16, UnsignedShort);
+datatype!(u32, UnsignedInt);
+datatype!(u64, UnsignedLong);
+datatype!(i8, Byte);
+datatype!(i16, Short);
+datatype!(i32, Int);
+datatype!(i64, Long);
+datatype!(f32, Float);
+datatype!(f64, Double);
+datatype!(String, String);
+datatype!(xsd_types::DateTime, DateTime);
 
 unsized_datatype! {
 	str: String
