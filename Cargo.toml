@@ -19,7 +19,7 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/luminvent/linked-data-rs"
 edition = "2024"
 rust-version = "1.85.0"
-version = "0.1.6"
+version = "0.1.7"
 
 [features]
 default = ["derive", "serde"]
@@ -52,7 +52,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-linked-data-next-derive = { version = "0.1.6", path = "derive" }
+linked-data-next-derive = { version = "0.1.7", path = "derive" }
 iref = "3.0"
 static-iref = "3.0"
 thiserror = "2"
