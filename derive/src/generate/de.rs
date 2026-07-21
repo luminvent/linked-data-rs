@@ -174,7 +174,7 @@ fn generate_field(
 			} else if attrs.ignore {
 				Ok(None)
 			} else {
-				panic!()
+				panic!("Missing #[ld(...)] attribute")
 			}
 		}
 	}

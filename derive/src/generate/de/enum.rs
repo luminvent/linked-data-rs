@@ -170,7 +170,7 @@ pub fn generate(
 					}
 				}
 				VariantShape::Unit => {
-					panic!()
+					panic!("Unit enum type is not supported")
 				}
 			},
 		};
