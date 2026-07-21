@@ -72,6 +72,7 @@ mod macros;
 mod predicate;
 mod quads;
 mod rdf;
+mod rdf_list;
 mod reference;
 mod resource;
 mod subject;

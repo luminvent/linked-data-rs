@@ -1,9 +1,10 @@
 use iref::{Iri, IriBuf};
 use rdf_types::{
-	BlankId, BlankIdBuf, Id, Interpretation, Vocabulary,
+	BlankId, BlankIdBuf, Id, Interpretation, RDF_FIRST, RDF_REST, Vocabulary,
 	dataset::PatternMatchingDataset,
 	interpretation::{
-		ReverseBlankIdInterpretation, ReverseIdInterpretation, ReverseIriInterpretation,
+		IriInterpretation, ReverseBlankIdInterpretation, ReverseIdInterpretation,
+		ReverseIriInterpretation,
 	},
 	vocabulary::{BlankIdVocabularyMut, IriVocabularyMut},
 };
@@ -12,7 +13,7 @@ use std::hash::Hash;
 
 use crate::{
 	Context, FromLinkedDataError, LinkedDataDeserializeSubject, LinkedDataResource,
-	LinkedDataSubject,
+	LinkedDataSubject, rdf_list::RdfList,
 };
 
 /// Type representing the objects of an RDF subject's predicate binding.
@@ -83,17 +84,20 @@ impl<I: Interpretation, V: Vocabulary, T: LinkedDataSubject<I, V> + LinkedDataRe
 	}
 }
 
-impl<I: Interpretation, V: Vocabulary, T: LinkedDataSubject<I, V> + LinkedDataResource<I, V>>
-	LinkedDataPredicateObjects<I, V> for Vec<T>
+/// Serialized as an `rdf:List` (a chain of blank nodes linked by
+/// `rdf:first`/`rdf:rest`, terminated by `rdf:nil`) so that element order is
+/// preserved.
+impl<
+	I: Interpretation,
+	V: Vocabulary + IriVocabularyMut,
+	T: LinkedDataSubject<I, V> + LinkedDataResource<I, V>,
+> LinkedDataPredicateObjects<I, V> for Vec<T>
 {
 	fn visit_objects<S>(&self, mut visitor: S) -> Result<S::Ok, S::Error>
 	where
 		S: PredicateObjectsVisitor<I, V>,
 	{
-		for t in self {
-			visitor.object(t)?;
-		}
-
+		visitor.object(&RdfList(self.as_slice()))?;
 		visitor.end()
 	}
 }
@@ -352,10 +356,13 @@ where
 	}
 }
 
+/// Deserialized by walking an `rdf:List` (a chain of blank nodes linked by
+/// `rdf:first`/`rdf:rest`, terminated by `rdf:nil`), preserving element
+/// order. A predicate with no value at all is treated as an empty list.
 impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
 	LinkedDataDeserializePredicateObjects<I, V> for Vec<T>
 where
-	I: ReverseIriInterpretation<Iri = V::Iri>,
+	I: ReverseIriInterpretation<Iri = V::Iri> + IriInterpretation<V::Iri>,
 {
 	fn deserialize_objects_in<'a, D>(
 		vocabulary: &V,
@@ -369,19 +376,60 @@ where
 		I::Resource: 'a,
 		D: PatternMatchingDataset<Resource = I::Resource>,
 	{
-		objects
-			.into_iter()
-			.map(|object| {
-				T::deserialize_subject_in(
-					vocabulary,
-					interpretation,
-					dataset,
-					graph,
-					object,
-					context,
-				)
-			})
-			.collect::<Result<Vec<_>, _>>()
+		let mut objects = objects.into_iter();
+
+		let head = match objects.next() {
+			Some(head) => {
+				if objects.next().is_some() {
+					return Err(FromLinkedDataError::TooManyValues(
+						context.into_iris(vocabulary, interpretation),
+					));
+				}
+
+				head
+			}
+			None => return Ok(Vec::new()),
+		};
+
+		let (Some(first_predicate), Some(rest_predicate)) = (
+			interpretation.lexical_iri_interpretation(vocabulary, RDF_FIRST),
+			interpretation.lexical_iri_interpretation(vocabulary, RDF_REST),
+		) else {
+			return Ok(Vec::new());
+		};
+
+		let mut result = Vec::new();
+		let mut node = head;
+
+		loop {
+			let mut firsts = dataset.quad_objects(graph, node, &first_predicate);
+			let Some(item) = firsts.next() else {
+				break;
+			};
+
+			if firsts.next().is_some() {
+				return Err(FromLinkedDataError::TooManyValues(
+					context.into_iris(vocabulary, interpretation),
+				));
+			}
+
+			result.push(T::deserialize_subject_in(
+				vocabulary,
+				interpretation,
+				dataset,
+				graph,
+				item,
+				context,
+			)?);
+
+			let mut rests = dataset.quad_objects(graph, node, &rest_predicate);
+			match rests.next() {
+				Some(next) => node = next,
+				None => break,
+			}
+		}
+
+		Ok(result)
 	}
 }
 

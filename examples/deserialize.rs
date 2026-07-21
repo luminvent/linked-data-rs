@@ -1,8 +1,8 @@
 use iref::IriBuf;
 use linked_data_next::{LinkedDataDeserializeSubject, to_quads};
 use linked_data_next_derive::{Deserialize, Serialize};
-use rdf_types::dataset::IndexedBTreeDataset;
-use rdf_types::{Term, generator};
+use rdf_types::dataset::{IndexedBTreeDataset, TraversableDataset};
+use rdf_types::{RdfDisplay, Term, generator};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[ld(prefix("ex" = "http://example.org/"))]
@@ -26,19 +26,22 @@ fn main() {
 		emails: vec!["john.smith@mail.me".to_string()],
 	};
 
-	to_quads(generator::Blank::new(), &value_1)
-		.expect("RDF serialization failed")
-		.into_iter()
-		.for_each(|rdf_quad| {
-			let quad = rdf_types::Quad(
-				Term::Id(rdf_quad.0),
-				Term::iri(rdf_quad.1),
-				rdf_quad.2,
-				rdf_quad.3.map(Term::Id),
-			);
+	to_quads(
+		generator::Blank::new_with_prefix("john-".to_string()),
+		&value_1,
+	)
+	.expect("RDF serialization failed")
+	.into_iter()
+	.for_each(|rdf_quad| {
+		let quad = rdf_types::Quad(
+			Term::Id(rdf_quad.0),
+			Term::iri(rdf_quad.1),
+			rdf_quad.2,
+			rdf_quad.3.map(Term::Id),
+		);
 
-			dataset.insert(quad);
-		});
+		dataset.insert(quad);
+	});
 
 	let id_2 = IriBuf::new("http://example.org/joe".to_string()).unwrap();
 
@@ -48,23 +51,32 @@ fn main() {
 		emails: vec!["joe.dalton@mail.me".to_string()],
 	};
 
-	to_quads(generator::Blank::new(), &value_2)
-		.expect("RDF serialization failed")
-		.into_iter()
-		.for_each(|rdf_quad| {
-			let quad = rdf_types::Quad(
-				Term::Id(rdf_quad.0),
-				Term::iri(rdf_quad.1),
-				rdf_quad.2,
-				rdf_quad.3.map(Term::Id),
-			);
+	to_quads(
+		generator::Blank::new_with_prefix("joe-".to_string()),
+		&value_2,
+	)
+	.expect("RDF serialization failed")
+	.into_iter()
+	.for_each(|rdf_quad| {
+		let quad = rdf_types::Quad(
+			Term::Id(rdf_quad.0),
+			Term::iri(rdf_quad.1),
+			rdf_quad.2,
+			rdf_quad.3.map(Term::Id),
+		);
 
-			dataset.insert(quad);
-		});
+		dataset.insert(quad);
+	});
 
 	let resources = [Term::iri(id_1), Term::iri(id_2)];
 
+	println!("{}", "#".repeat(50));
+	for quad in dataset.quads() {
+		println!("{} .", quad.rdf_display())
+	}
+
 	let objects = Foo::deserialize_subjects(&(), &(), &dataset, None, resources).unwrap();
 
+	println!("{}", "#".repeat(50));
 	println!("{objects:#?}");
 }
